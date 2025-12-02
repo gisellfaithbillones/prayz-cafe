@@ -541,6 +541,63 @@ const menuItems = [
     sizes: [{ label: 'Reg', price: 150 }],
   },
 
+  // Toast
+  {
+    category: 'Toast',
+    name: 'Margarine',
+    sizes: [{ label: 'Reg', price: 49 }],
+  },
+  {
+    category: 'Toast',
+    name: 'Butter & Sugar',
+    sizes: [{ label: 'Reg', price: 49 }],
+  },
+  {
+    category: 'Toast',
+    name: 'Peanut Butter',
+    sizes: [{ label: 'Reg', price: 59 }],
+  },
+  {
+    category: 'Toast',
+    name: 'Chocolate Spread',
+    sizes: [{ label: 'Reg', price: 59 }],
+  },
+  {
+    category: 'Toast',
+    name: 'Ham & Cheese',
+    sizes: [{ label: 'Reg', price: 79 }],
+  },
+  {
+    category: 'Toast',
+    name: 'Cheese Toast',
+    sizes: [{ label: 'Reg', price: 79 }],
+  },
+  {
+    category: 'Toast',
+    name: 'Egg Mayo',
+    sizes: [{ label: 'Reg', price: 79 }],
+  },
+  {
+    category: 'Toast',
+    name: 'Avocado',
+    sizes: [{ label: 'Reg', price: 99 }],
+  },
+  {
+    category: 'Toast',
+    name: 'Avocado & Egg',
+    sizes: [{ label: 'Reg', price: 119 }],
+  },
+  {
+    category: 'Toast',
+    name: 'Mozzarella Garlic',
+    sizes: [{ label: 'Reg', price: 99 }],
+  },
+  {
+    category: 'Toast',
+    name: 'Pizza Toast',
+    sizes: [{ label: 'Reg', price: 99 }],
+  },
+
   // Mains
   {
     category: 'Mains',
