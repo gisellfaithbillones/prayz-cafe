@@ -5,8 +5,10 @@
       <div class="container">
         <div class="nav-content">
           <router-link to="/" class="logo">Prayz</router-link>
-          <router-link to="/menu" class="nav-link active">Menu</router-link>
-          <router-link to="/contact" class="nav-link">Contact</router-link>
+          <div class="nav-links ms-auto">
+            <router-link to="/menu" class="nav-link active">Menu</router-link>
+            <router-link to="/contact" class="nav-link">Contact</router-link>
+          </div>
         </div>
       </div>
     </nav>
@@ -130,8 +132,15 @@ export default {
 
 .nav-content {
   display: flex;
-  justify-content: space-between;
+  justify-content: flex-start;
   align-items: center;
+}
+
+.nav-links {
+  display: flex;
+  align-items: center;
+  gap: 2.5rem;
+  margin-left: 3rem;
 }
 
 .logo {
@@ -157,6 +166,7 @@ export default {
   text-transform: uppercase;
   transition: color 0.3s ease;
   position: relative;
+  margin-left: 1.5rem;
 }
 
 .nav-link:hover,
