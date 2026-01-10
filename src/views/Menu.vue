@@ -8,6 +8,14 @@
           <div class="nav-links ms-auto">
             <router-link to="/menu" class="nav-link active">Menu</router-link>
             <router-link to="/contact" class="nav-link">Contact</router-link>
+            <router-link to="/cart" class="cart-link">
+              <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="9" cy="21" r="1"></circle>
+                <circle cx="20" cy="21" r="1"></circle>
+                <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path>
+              </svg>
+              <span v-if="cartCount > 0" class="cart-badge">{{ cartCount }}</span>
+            </router-link>
           </div>
         </div>
       </div>
@@ -42,25 +50,49 @@
                     :key="`${item.name}-${index}`"
                     class="menu-card-item"
                   >
-                    <span class="menu-card-item-name">
-                      {{ item.name }}
-                      <span
-                        v-if="item.description"
-                        class="menu-card-item-description"
-                      >
-                        · {{ item.description }}
+                    <div class="menu-item-content">
+                      <span class="menu-card-item-name">
+                        {{ item.name }}
+                        <span
+                          v-if="item.description"
+                          class="menu-card-item-description"
+                        >
+                          · {{ item.description }}
+                        </span>
                       </span>
-                    </span>
-                    <span class="menu-card-item-price">
-                      <span
-                        v-for="size in item.sizes"
-                        :key="`${item.name}-${size.label}`"
-                        class="menu-size"
-                      >
-                        <span class="menu-size-label">{{ size.label }}</span>
-                        <span class="menu-size-value">{{ size.price }}</span>
+                      <span class="menu-card-item-price">
+                        <span
+                          v-for="size in item.sizes"
+                          :key="`${item.name}-${size.label}`"
+                          class="menu-size"
+                        >
+                          <span class="menu-size-label">{{ size.label }}</span>
+                          <span class="menu-size-value">₱{{ size.price }}</span>
+                        </span>
                       </span>
-                    </span>
+                    </div>
+                    <div class="menu-item-actions">
+                      <select 
+                        v-model="selectedSizes[`${category.label}-${item.name}`]"
+                        class="size-select"
+                        :disabled="item.sizes.length === 1"
+                      >
+                        <option 
+                          v-for="size in item.sizes" 
+                          :key="size.label"
+                          :value="size.label"
+                        >
+                          {{ size.label }} - ₱{{ size.price }}
+                        </option>
+                      </select>
+                      <button 
+                        @click="addItemToCart(item, selectedSizes[`${category.label}-${item.name}`])"
+                        class="add-to-cart-btn"
+                        :disabled="!selectedSizes[`${category.label}-${item.name}`]"
+                      >
+                        Add to Cart
+                      </button>
+                    </div>
                   </li>
                 </ul>
               </div>
@@ -81,12 +113,18 @@
 
 <script>
 import menuItems from '../data/menuItems'
+import { useCart } from '../composables/useCart'
 
 export default {
   name: 'Menu',
+  setup() {
+    const { addToCart, getItemCount } = useCart()
+    return { addToCart, getItemCount }
+  },
   data() {
     return {
       menuItems,
+      selectedSizes: {},
     }
   },
   computed: {
@@ -110,7 +148,37 @@ export default {
         items: groups[label],
       }))
     },
+    cartCount() {
+      return this.getItemCount()
+    }
   },
+  mounted() {
+    // Initialize default size selections
+    this.categories.forEach(category => {
+      category.items.forEach(item => {
+        if (item.sizes && item.sizes.length > 0) {
+          const key = `${category.label}-${item.name}`
+          if (!this.selectedSizes[key]) {
+            this.selectedSizes[key] = item.sizes[0].label
+          }
+        }
+      })
+    })
+  },
+  methods: {
+    addItemToCart(item, selectedSizeLabel) {
+      if (!selectedSizeLabel) return
+      
+      const selectedSize = item.sizes.find(s => s.label === selectedSizeLabel)
+      if (selectedSize) {
+        this.addToCart(item, selectedSize)
+        // Show feedback (you could add a toast notification here)
+        this.$nextTick(() => {
+          // Optional: scroll to cart icon or show notification
+        })
+      }
+    }
+  }
 }
 </script>
 
@@ -190,6 +258,36 @@ export default {
   width: 100%;
 }
 
+.cart-link {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-left: 1.5rem;
+  color: var(--dark-gray);
+  transition: color 0.3s ease;
+}
+
+.cart-link:hover {
+  color: var(--primary-green);
+}
+
+.cart-badge {
+  position: absolute;
+  top: -8px;
+  right: -8px;
+  background-color: var(--dark-red);
+  color: white;
+  border-radius: 50%;
+  width: 20px;
+  height: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.7rem;
+  font-weight: 600;
+}
+
 .menu-header {
   padding: 80px 0 20px;
   text-align: center;
@@ -259,8 +357,65 @@ export default {
 
 .menu-card-item {
   display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 8px 0;
+  border-bottom: 1px solid rgba(44, 44, 44, 0.1);
+}
+
+.menu-card-item:last-child {
+  border-bottom: none;
+}
+
+.menu-item-content {
+  display: flex;
   justify-content: space-between;
   font-size: 0.9rem;
+}
+
+.menu-item-actions {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+.size-select {
+  padding: 6px 10px;
+  border: 1px solid rgba(44, 44, 44, 0.2);
+  background-color: white;
+  border-radius: 4px;
+  font-size: 0.85rem;
+  cursor: pointer;
+  flex: 1;
+  max-width: 150px;
+}
+
+.size-select:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.add-to-cart-btn {
+  padding: 6px 16px;
+  background-color: var(--primary-green);
+  color: white;
+  border: none;
+  border-radius: 4px;
+  font-size: 0.85rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.add-to-cart-btn:hover:not(:disabled) {
+  background-color: var(--dark-red);
+}
+
+.add-to-cart-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
 }
 
 .menu-card-item-name {
