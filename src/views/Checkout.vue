@@ -28,8 +28,97 @@
       </div>
     </section>
 
-    <!-- Checkout Content -->
-    <section class="checkout-content" v-if="groupedItems.length > 0">
+    <!-- Order Summary (shown after payment return) -->
+    <section class="checkout-content" v-if="showOrderSummary && orderDetails.orderId">
+      <div class="container">
+        <div class="order-summary-container">
+          <div class="summary-header">
+            <h2 class="summary-title">Order Summary</h2>
+            <p class="summary-subtitle">Thank you for your order!</p>
+          </div>
+          
+          <div class="order-summary-card">
+            <div class="summary-section">
+              <h3 class="section-title-small">Order Details</h3>
+              <div class="summary-info">
+                <div class="info-row">
+                  <span class="info-label">Order ID:</span>
+                  <span class="info-value">{{ orderDetails.orderId }}</span>
+                </div>
+                <div class="info-row">
+                  <span class="info-label">Order Type:</span>
+                  <span class="info-value order-type-badge" :class="orderDetails.orderType">
+                    {{ orderDetails.orderType === 'delivery' ? 'Delivery' : 'Pickup' }}
+                  </span>
+                </div>
+                <div class="info-row">
+                  <span class="info-label">Date:</span>
+                  <span class="info-value">{{ formatDate(orderDetails.date) }}</span>
+                </div>
+              </div>
+            </div>
+
+            <div class="summary-section">
+              <h3 class="section-title-small">Customer Information</h3>
+              <div class="summary-info">
+                <div class="info-row">
+                  <span class="info-label">Name:</span>
+                  <span class="info-value">{{ orderDetails.customerInfo.name }}</span>
+                </div>
+                <div class="info-row">
+                  <span class="info-label">Phone:</span>
+                  <span class="info-value">{{ orderDetails.customerInfo.phone }}</span>
+                </div>
+                <div class="info-row" v-if="orderDetails.customerInfo.email">
+                  <span class="info-label">Email:</span>
+                  <span class="info-value">{{ orderDetails.customerInfo.email }}</span>
+                </div>
+                <div class="info-row" v-if="orderDetails.orderType === 'delivery' && orderDetails.customerInfo.address">
+                  <span class="info-label">Address:</span>
+                  <span class="info-value">{{ orderDetails.customerInfo.address }}</span>
+                </div>
+              </div>
+            </div>
+
+            <div class="summary-section">
+              <h3 class="section-title-small">Order Items</h3>
+              <div class="order-items-summary">
+                <div 
+                  v-for="item in orderDetails.items" 
+                  :key="`${item.name}-${item.size}`"
+                  class="summary-item-row"
+                >
+                  <div class="item-info">
+                    <span class="item-name">{{ item.name }}</span>
+                    <span class="item-details">{{ item.size }} × {{ item.quantity }}</span>
+                  </div>
+                  <span class="item-price">₱{{ (item.price * item.quantity).toFixed(2) }}</span>
+                </div>
+              </div>
+            </div>
+
+            <div class="summary-total-section">
+              <div class="total-row">
+                <span class="total-label">Total Amount:</span>
+                <span class="total-value">₱{{ orderDetails.total.toFixed(2) }}</span>
+              </div>
+            </div>
+
+            <div class="summary-actions">
+              <router-link to="/order-confirmation" class="view-details-btn">
+                View Full Order Details
+              </router-link>
+              <router-link to="/menu" class="continue-shopping-btn">
+                Continue Shopping
+              </router-link>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Checkout Content (shown before payment) -->
+    <section class="checkout-content" v-else-if="groupedItems.length > 0">
       <div class="container">
         <div class="row">
           <div class="col-12 col-lg-7">
@@ -228,7 +317,20 @@ export default {
         address: this.cart.customerInfo.address || '',
         notes: this.cart.customerInfo.notes || ''
       },
+      showOrderSummary: false,
+      orderDetails: {
+        orderId: '',
+        orderType: 'pickup',
+        customerInfo: {},
+        items: [],
+        total: 0,
+        date: new Date().toISOString()
+      }
     }
+  },
+  mounted() {
+    // Check if returning from payment
+    this.checkPaymentReturn()
   },
   computed: {
     groupedItems() {
@@ -266,9 +368,12 @@ export default {
       // Note: PayMongo payment links may require manual amount entry
       const paymongoPaymentLink = 'https://paymongo.page/l/the-prayz-cafe'
       
-      // Try to pass amount as query parameter (may or may not work depending on PayMongo link settings)
+      // Get the return URL (current checkout page)
+      const returnUrl = encodeURIComponent(window.location.origin + '/checkout')
+      
+      // Try to pass amount and return URL as query parameters
       const formattedAmount = parseFloat(this.totalPrice).toFixed(2)
-      window.location.href = `${paymongoPaymentLink}?amount=${formattedAmount}`
+      window.location.href = `${paymongoPaymentLink}?amount=${formattedAmount}&return_url=${returnUrl}`
     },
     copyAmount() {
       const amount = this.totalPrice.toFixed(2)
@@ -296,6 +401,34 @@ export default {
         total: this.totalPrice,
         date: new Date().toISOString()
       }
+    },
+    checkPaymentReturn() {
+      // Check if there's a pending order in sessionStorage (returning from payment)
+      const pendingOrder = sessionStorage.getItem('pendingOrder')
+      const urlParams = new URLSearchParams(window.location.search)
+      
+      // Check for PayMongo return parameters or pending order
+      if (pendingOrder || urlParams.has('payment_id') || urlParams.has('status')) {
+        if (pendingOrder) {
+          this.orderDetails = JSON.parse(pendingOrder)
+          this.showOrderSummary = true
+          
+          // Clean up URL parameters
+          if (urlParams.has('payment_id') || urlParams.has('status')) {
+            window.history.replaceState({}, document.title, window.location.pathname)
+          }
+        }
+      }
+    },
+    formatDate(dateString) {
+      const date = new Date(dateString)
+      return date.toLocaleString('en-US', {
+        year: 'numeric',
+        month: 'long',
+        day: 'numeric',
+        hour: '2-digit',
+        minute: '2-digit'
+      })
     }
   }
 }
@@ -724,6 +857,208 @@ export default {
   letter-spacing: 1px;
 }
 
+.order-summary-container {
+  max-width: 800px;
+  margin: 0 auto;
+}
+
+.summary-header {
+  text-align: center;
+  margin-bottom: 30px;
+}
+
+.summary-title {
+  font-family: var(--font-display);
+  font-size: 2rem;
+  font-weight: 400;
+  color: var(--dark-gray);
+  margin-bottom: 8px;
+}
+
+.summary-subtitle {
+  font-size: 1.1rem;
+  color: var(--dark-gray);
+  opacity: 0.8;
+}
+
+.order-summary-card {
+  background-color: #e1dfd7;
+  padding: 30px;
+  border-radius: 8px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.summary-section {
+  margin-bottom: 24px;
+  padding-bottom: 24px;
+  border-bottom: 1px solid rgba(44, 44, 44, 0.1);
+}
+
+.summary-section:last-of-type {
+  border-bottom: none;
+  margin-bottom: 0;
+  padding-bottom: 0;
+}
+
+.section-title-small {
+  font-size: 1.1rem;
+  font-weight: 500;
+  margin-bottom: 16px;
+  color: var(--dark-gray);
+}
+
+.summary-info {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.info-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 16px;
+}
+
+.info-label {
+  font-size: 0.9rem;
+  color: var(--dark-gray);
+  opacity: 0.7;
+  font-weight: 500;
+  min-width: 100px;
+}
+
+.info-value {
+  font-size: 0.95rem;
+  color: var(--dark-gray);
+  font-weight: 500;
+  text-align: right;
+  flex: 1;
+}
+
+.order-type-badge {
+  display: inline-block;
+  padding: 4px 12px;
+  border-radius: 12px;
+  font-size: 0.85rem;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.order-type-badge.pickup {
+  background-color: rgba(75, 98, 49, 0.2);
+  color: var(--primary-green);
+}
+
+.order-type-badge.delivery {
+  background-color: rgba(122, 15, 31, 0.2);
+  color: var(--dark-red);
+}
+
+.order-items-summary {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.summary-item-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px;
+  background-color: rgba(255, 255, 255, 0.5);
+  border-radius: 4px;
+}
+
+.item-info {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.item-name {
+  font-weight: 500;
+  color: var(--dark-gray);
+}
+
+.item-details {
+  font-size: 0.85rem;
+  color: var(--dark-gray);
+  opacity: 0.7;
+}
+
+.item-price {
+  font-weight: 600;
+  color: var(--primary-green);
+}
+
+.summary-total-section {
+  margin-top: 20px;
+  padding-top: 20px;
+  border-top: 2px solid var(--dark-gray);
+}
+
+.total-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.total-label {
+  font-size: 1.2rem;
+  font-weight: 500;
+  color: var(--dark-gray);
+}
+
+.total-value {
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: var(--primary-green);
+}
+
+.summary-actions {
+  display: flex;
+  gap: 16px;
+  margin-top: 24px;
+  flex-wrap: wrap;
+}
+
+.view-details-btn {
+  flex: 1;
+  padding: 14px;
+  background-color: var(--primary-green);
+  color: white;
+  text-align: center;
+  text-decoration: none;
+  border-radius: 4px;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  transition: background-color 0.3s ease;
+}
+
+.view-details-btn:hover {
+  background-color: var(--dark-red);
+}
+
+.continue-shopping-btn {
+  flex: 1;
+  padding: 14px;
+  background-color: transparent;
+  color: var(--dark-gray);
+  text-align: center;
+  text-decoration: none;
+  border: 1px solid rgba(44, 44, 44, 0.2);
+  border-radius: 4px;
+  font-weight: 500;
+  transition: all 0.3s ease;
+}
+
+.continue-shopping-btn:hover {
+  border-color: var(--primary-green);
+  color: var(--primary-green);
+}
+
 @media (max-width: 768px) {
   .order-summary {
     position: static;
@@ -736,6 +1071,19 @@ export default {
   
   .order-type-options {
     flex-direction: column;
+  }
+
+  .summary-actions {
+    flex-direction: column;
+  }
+
+  .info-row {
+    flex-direction: column;
+    gap: 4px;
+  }
+
+  .info-value {
+    text-align: left;
   }
 }
 </style>
