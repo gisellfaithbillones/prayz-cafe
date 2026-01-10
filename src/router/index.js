@@ -36,6 +36,10 @@ const routes = [
     path: '/order-confirmation',
     name: 'OrderConfirmation',
     component: OrderConfirmation
+  },
+  {
+    path: '/:pathMatch(.*)*',
+    redirect: '/'
   }
 ]
 

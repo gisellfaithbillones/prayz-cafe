@@ -126,8 +126,20 @@
                 <div class="payment-info">
                   <p>You will be redirected to PayMongo to complete your payment.</p>
                   <p class="payment-note">We accept <strong>QR PH</strong> payments (GCash, PayMaya).</p>
-                  <p class="payment-note" style="margin-top: 8px; font-size: 0.85rem;">You'll be redirected to PayMongo to complete payment. Please enter the amount: <strong>₱{{ totalPrice.toFixed(2) }}</strong></p>
-                  <p class="payment-note" style="margin-top: 4px; font-size: 0.85rem; color: var(--dark-red);">⚠️ Make sure to enter the correct amount shown above.</p>
+                  <div class="amount-reminder">
+                    <p class="amount-label">Amount to Pay:</p>
+                    <div class="amount-display">
+                      <span class="amount-value">₱{{ totalPrice.toFixed(2) }}</span>
+                      <button 
+                        @click="copyAmount" 
+                        class="copy-btn"
+                        type="button"
+                      >
+                        Copy
+                      </button>
+                    </div>
+                    <p class="amount-instruction">Please enter this exact amount on the PayMongo payment page.</p>
+                  </div>
                 </div>
               </div>
 
@@ -257,6 +269,22 @@ export default {
       // Try to pass amount as query parameter (may or may not work depending on PayMongo link settings)
       const formattedAmount = parseFloat(this.totalPrice).toFixed(2)
       window.location.href = `${paymongoPaymentLink}?amount=${formattedAmount}`
+    },
+    copyAmount() {
+      const amount = this.totalPrice.toFixed(2)
+      navigator.clipboard.writeText(amount).then(() => {
+        // Show feedback
+        const btn = event.target
+        const originalText = btn.textContent
+        btn.textContent = 'Copied!'
+        btn.style.backgroundColor = 'var(--primary-green)'
+        setTimeout(() => {
+          btn.textContent = originalText
+          btn.style.backgroundColor = ''
+        }, 2000)
+      }).catch(() => {
+        alert(`Amount to pay: ₱${amount}`)
+      })
     },
     generateOrderDetails() {
       const orderId = 'ORD-' + Date.now()
@@ -487,6 +515,61 @@ export default {
   margin-top: 8px !important;
   font-size: 0.85rem !important;
   opacity: 0.8;
+}
+
+.amount-reminder {
+  margin-top: 16px;
+  padding: 16px;
+  background-color: white;
+  border-radius: 4px;
+  border: 2px solid var(--primary-green);
+}
+
+.amount-label {
+  font-size: 0.9rem;
+  font-weight: 500;
+  color: var(--dark-gray);
+  margin-bottom: 8px;
+}
+
+.amount-display {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 8px;
+}
+
+.amount-value {
+  font-size: 1.8rem;
+  font-weight: 600;
+  color: var(--primary-green);
+  flex: 1;
+}
+
+.copy-btn {
+  padding: 8px 16px;
+  background-color: var(--primary-green);
+  color: white;
+  border: none;
+  border-radius: 4px;
+  font-size: 0.85rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+  white-space: nowrap;
+}
+
+.copy-btn:hover {
+  background-color: var(--dark-red);
+}
+
+.amount-instruction {
+  font-size: 0.85rem;
+  color: var(--dark-gray);
+  opacity: 0.8;
+  margin: 0;
+  font-style: italic;
 }
 
 .form-actions {
