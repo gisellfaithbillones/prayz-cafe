@@ -1,18 +1,5 @@
 <template>
   <div class="confirmation-page">
-    <!-- Navigation -->
-    <nav class="navbar">
-      <div class="container">
-        <div class="nav-content">
-          <router-link to="/" class="logo">Prayz</router-link>
-          <div class="nav-links ms-auto">
-            <router-link to="/menu" class="nav-link">Menu</router-link>
-            <router-link to="/contact" class="nav-link">Contact</router-link>
-          </div>
-        </div>
-      </div>
-    </nav>
-
     <!-- Confirmation Content -->
     <section class="confirmation-content">
       <div class="container">
@@ -210,58 +197,6 @@ export default {
   min-height: 100vh;
   display: flex;
   flex-direction: column;
-}
-
-.navbar {
-  padding: 30px 0;
-  position: sticky;
-  top: 0;
-  background-color: var(--cream);
-  z-index: 100;
-  border-bottom: 1px solid rgba(44, 44, 44, 0.1);
-}
-
-.nav-content {
-  display: flex;
-  justify-content: flex-start;
-  align-items: center;
-}
-
-.nav-links {
-  display: flex;
-  align-items: center;
-  gap: 2.5rem;
-  margin-left: 3rem;
-}
-
-.logo {
-  font-family: var(--font-display);
-  font-size: 1.5rem;
-  font-weight: 500;
-  letter-spacing: 1px;
-  color: var(--primary-green);
-  text-decoration: none;
-  transition: color 0.3s ease;
-}
-
-.logo:hover {
-  color: var(--dark-red);
-}
-
-.nav-link {
-  font-size: 0.95rem;
-  font-weight: 500;
-  letter-spacing: 1px;
-  color: var(--dark-gray);
-  text-decoration: none;
-  text-transform: uppercase;
-  transition: color 0.3s ease;
-  position: relative;
-  margin-left: 1.5rem;
-}
-
-.nav-link:hover {
-  color: var(--primary-green);
 }
 
 .confirmation-content {
@@ -574,7 +509,6 @@ export default {
 }
 
 @media print {
-  .navbar,
   .footer,
   .confirmation-actions {
     display: none;

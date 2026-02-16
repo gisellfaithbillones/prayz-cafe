@@ -1,26 +1,5 @@
 <template>
   <div class="contact-page">
-    <!-- Navigation (same as Home) -->
-    <nav class="navbar">
-      <div class="container">
-        <div class="nav-content">
-          <router-link to="/" class="logo">Prayz</router-link>
-          <div class="nav-links ms-auto">
-            <router-link to="/menu" class="nav-link">Menu</router-link>
-            <router-link to="/contact" class="nav-link">Contact</router-link>
-            <router-link to="/cart" class="cart-link">
-              <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                <circle cx="9" cy="21" r="1"></circle>
-                <circle cx="20" cy="21" r="1"></circle>
-                <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path>
-              </svg>
-              <span v-if="cartCount > 0" class="cart-badge">{{ cartCount }}</span>
-            </router-link>
-          </div>
-        </div>
-      </div>
-    </nav>
-
     <!-- Hero -->
     <section class="hero">
       <div class="container">
@@ -97,19 +76,8 @@
 </template>
 
 <script>
-import { useCart } from '../composables/useCart'
-
 export default {
-  name: 'Contact',
-  setup() {
-    const { getItemCount } = useCart()
-    return { getItemCount }
-  },
-  computed: {
-    cartCount() {
-      return this.getItemCount()
-    }
-  }
+  name: 'Contact'
 }
 </script>
 
@@ -119,103 +87,6 @@ export default {
   display: flex;
   flex-direction: column;
   background-color: var(--cream);
-}
-
-.navbar {
-  padding: 30px 0;
-  position: sticky;
-  top: 0;
-  background-color: var(--cream);
-  z-index: 100;
-  border-bottom: 1px solid rgba(44, 44, 44, 0.1);
-}
-
-.nav-content {
-  display: flex;
-  justify-content: flex-start;
-  align-items: center;
-}
-
-.nav-links {
-  display: flex;
-  align-items: center;
-  gap: 2.5rem;
-  margin-left: 3rem;
-}
-
-.logo {
-  font-family: var(--font-display);
-  font-size: 1.5rem;
-  font-weight: 500;
-  letter-spacing: 1px;
-  color: var(--primary-green);
-  text-decoration: none;
-  transition: color 0.3s ease;
-}
-
-.logo:hover {
-  color: var(--dark-red);
-}
-
-.nav-link {
-  font-size: 0.95rem;
-  font-weight: 500;
-  letter-spacing: 1px;
-  color: var(--dark-gray);
-  text-decoration: none;
-  text-transform: uppercase;
-  transition: color 0.3s ease;
-  position: relative;
-  margin-left: 1.5rem;
-}
-
-.nav-link:hover {
-  color: var(--primary-green);
-}
-
-.nav-link::after {
-  content: '';
-  position: absolute;
-  bottom: -5px;
-  left: 0;
-  width: 0;
-  height: 2px;
-  background-color: var(--primary-green);
-  transition: width 0.3s ease;
-}
-
-.nav-link:hover::after {
-  width: 100%;
-}
-
-.cart-link {
-  position: relative;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  margin-left: 1.5rem;
-  color: var(--dark-gray);
-  transition: color 0.3s ease;
-}
-
-.cart-link:hover {
-  color: var(--primary-green);
-}
-
-.cart-badge {
-  position: absolute;
-  top: -8px;
-  right: -8px;
-  background-color: var(--dark-red);
-  color: white;
-  border-radius: 50%;
-  width: 20px;
-  height: 20px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 0.7rem;
-  font-weight: 600;
 }
 
 .hero {
