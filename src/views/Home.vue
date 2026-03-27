@@ -1,9 +1,6 @@
 <template>
   <div class="home-page">
     <div class="container container--narrow">
-      <!-- Brand -->
-      <h1 class="brand">Prayz</h1>
-
       <!-- Hero -->
       <div class="hero-wrap">
         <div class="hero-image">
@@ -40,25 +37,25 @@
         <div class="category-grid">
           <router-link to="/menu" class="category-card">
             <span class="card-num">01</span>
-            <div class="card-image card-coffee"></div>
+            <img src="../assets/coffee.jpg" alt="Coffee" class="card-image" />
             <span class="card-title">Coffee</span>
             <span class="card-link">view more →</span>
           </router-link>
           <router-link to="/menu" class="category-card">
             <span class="card-num">02</span>
-            <div class="card-image card-non-coffee"></div>
+            <img src="../assets/non coffee.png" alt="Non coffee" class="card-image" />
             <span class="card-title">Non Coffee</span>
             <span class="card-link">view more →</span>
           </router-link>
           <router-link to="/menu" class="category-card">
             <span class="card-num">03</span>
-            <div class="card-image card-icecream"></div>
+            <img src="../assets/ice cream.png" alt="Ice cream" class="card-image" />
             <span class="card-title">Ice cream</span>
             <span class="card-link">view more →</span>
           </router-link>
           <router-link to="/menu" class="category-card">
             <span class="card-num">04</span>
-            <div class="card-image card-meals"></div>
+            <img src="../assets/ricemeals.jpg" alt="Rice meals" class="card-image" />
             <span class="card-title">Meals</span>
             <span class="card-link">view more →</span>
           </router-link>
@@ -71,12 +68,13 @@
         <p class="gallery-desc">A glimpse of our space.</p>
         <div class="gallery-grid">
           <div class="gallery-main">
-            <div class="countertop-placeholder">Countertop image</div>
+            <img src="../assets/place1.jpg" alt="Prayz place" class="gallery-image" />
           </div>
           <div class="gallery-side">
-            <span class="gallery-arc">)</span>
-            <div class="gallery-small gallery-small-1"></div>
-            <div class="gallery-small gallery-small-2"></div>
+            <img src="../assets/place2.jpg" alt="Prayz place" class="gallery-small" />
+            <img src="../assets/place3.jpg" alt="Prayz place" class="gallery-small" />
+            <img src="../assets/place4.jpg" alt="Prayz place" class="gallery-small" />
+            <img src="../assets/place5.jpg" alt="Prayz place" class="gallery-small" />
           </div>
         </div>
       </section>
@@ -105,17 +103,6 @@ export default {
   max-width: 900px;
   margin: 0 auto;
   padding: 0 20px;
-}
-
-.brand {
-  font-family: var(--font-display);
-  font-size: clamp(3rem, 10vw, 6rem);
-  font-weight: 700;
-  letter-spacing: 0.02em;
-  color: var(--primary-green);
-  margin: 0;
-  padding: 24px 0 20px;
-  line-height: 1;
 }
 
 .hero-wrap {
@@ -254,7 +241,7 @@ export default {
 
 .cups-block {
   position: relative;
-  overflow: hidden;
+  overflow: visible;
   background-color: #d6d3c9;
   aspect-ratio: 16 / 9;
 }
@@ -262,7 +249,7 @@ export default {
 .cups-image {
   width: 100%;
   height: 100%;
-  object-fit: cover;
+  object-fit: contain;
   object-position: center;
   display: block;
 }
@@ -308,14 +295,12 @@ export default {
   aspect-ratio: 4/3;
   border-radius: 4px;
   margin-bottom: 10px;
-  background-size: cover;
-  background-position: center;
+  width: 100%;
+  object-fit: contain;
+  object-position: center;
+  display: block;
 }
 
-.card-coffee { background-color: #c4a77d; }
-.card-non-coffee { background-color: #a8c5b5; }
-.card-icecream { background-color: #e8d5c4; }
-.card-meals { background-color: #d4b896; }
 
 .card-title {
   font-weight: 600;
@@ -341,7 +326,7 @@ export default {
 
 .gallery-grid {
   display: grid;
-  grid-template-columns: 1fr 120px;
+  grid-template-columns: 0.85fr 1.15fr;
   gap: 12px;
   align-items: start;
 }
@@ -349,39 +334,28 @@ export default {
 .gallery-main {
   min-height: 180px;
   border-radius: 4px;
-  overflow: hidden;
-  background-color: #e1dfd7;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+  overflow: visible;
 }
 
-.countertop-placeholder {
-  font-size: 0.9rem;
-  letter-spacing: 0.06em;
-  color: var(--light-gray);
-  text-transform: lowercase;
+.gallery-image {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  display: block;
 }
 
 .gallery-side {
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-  align-items: flex-end;
-}
-
-.gallery-arc {
-  color: var(--primary-green);
-  font-size: 1.5rem;
-  line-height: 1;
-  margin-bottom: 4px;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
 }
 
 .gallery-small {
   width: 100%;
   aspect-ratio: 1;
   border-radius: 4px;
-  background-color: #d6d3c9;
+  object-fit: contain;
+  display: block;
 }
 
 .page-footer {
@@ -412,11 +386,10 @@ export default {
     grid-template-columns: 1fr;
   }
   .gallery-side {
-    flex-direction: row;
-    justify-content: flex-start;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
   }
   .gallery-small {
-    max-width: 120px;
+    max-width: none;
   }
 }
 

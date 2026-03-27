@@ -3,7 +3,9 @@
     <nav class="site-nav">
       <div class="container">
         <div class="site-nav-inner">
-          <router-link to="/" class="site-nav-logo">Prayz</router-link>
+          <router-link to="/" class="site-nav-logo" aria-label="Prayz home">
+            <img :src="logoSrc" alt="Prayz logo" class="site-nav-logo-image" />
+          </router-link>
           <div class="site-nav-links">
             <router-link to="/about" class="site-nav-link">About</router-link>
             <router-link to="/menu" class="site-nav-link">Menu</router-link>
@@ -28,12 +30,13 @@
 
 <script>
 import { useCart } from '../composables/useCart'
+import logoSrc from '../assets/prayz logo (1).png'
 
 export default {
   name: 'MainLayout',
   setup() {
     const { getItemCount } = useCart()
-    return { getItemCount }
+    return { getItemCount, logoSrc }
   },
   computed: {
     cartCount() {
@@ -67,17 +70,24 @@ export default {
 }
 
 .site-nav-logo {
-  font-family: var(--font-display);
-  font-size: 1.35rem;
-  font-weight: 700;
-  letter-spacing: 0.02em;
-  color: var(--primary-green);
   text-decoration: none;
-  transition: color 0.2s ease;
+  display: inline-flex;
+  align-items: center;
+  width: 220px;
+  height: 52px;
+  overflow: hidden;
+}
+
+.site-nav-logo-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
+  display: block;
 }
 
 .site-nav-logo:hover {
-  color: var(--dark-gray);
+  opacity: 0.85;
 }
 
 .site-nav-links {
@@ -131,6 +141,18 @@ export default {
 
 .layout-content {
   flex: 1;
+}
+
+@media (max-width: 576px) {
+  .site-nav-logo {
+    width: 160px;
+    height: 42px;
+  }
+
+  .site-nav-logo-image {
+    width: 100%;
+    height: 100%;
+  }
 }
 
 @media print {
